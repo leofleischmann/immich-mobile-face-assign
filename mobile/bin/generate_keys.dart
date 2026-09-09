@@ -328,7 +328,11 @@ void _generateMethod(
   String indent,
 ) {
   final paramList = params.map((p) => 'required ${p.type} ${_escapeName(p.name)}').join(', ');
-  final argsMap = params.map((p) => '\'${p.name}\': ${_escapeName(p.name)}').join(', ');
+  // A bool parameter comes from an ICU select over `true`/`false`, and
+  // MessageFormat only ever matches a select against a string, so hand it one
+  final argsMap = params
+      .map((p) => '\'${p.name}\': ${_escapeName(p.name)}${p.type == 'bool' ? '.toString()' : ''}')
+      .join(', ');
   buffer.writeln('${indent}String $dartName({$paramList}) => _t(\'$translationKey\', {$argsMap});');
 }
 
